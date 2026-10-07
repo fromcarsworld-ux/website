@@ -1,0 +1,456 @@
+/* =========================================================================
+   ENCORE — HOME  |  1440w light
+   Pixel-exact implementation of the supplied design spec.
+   Root frame : 1440 x 3017.77
+   Header     : top 0,      h 96        (children are header-relative)
+   Main       : top 96,     h 2513.58   (children are main-relative)
+   Footer     : top 2609.58, h 408.19   (children are panel-relative)
+   ========================================================================= */
+
+/* ------------------------------- fonts -------------------------------- */
+@font-face{font-family:'Open Sans';font-style:normal;font-weight:400;font-display:swap;
+  src:url('../assets/fonts/open-sans-latin-400-normal.woff2') format('woff2')}
+@font-face{font-family:'Open Sans';font-style:normal;font-weight:500;font-display:swap;
+  src:url('../assets/fonts/open-sans-latin-500-normal.woff2') format('woff2')}
+@font-face{font-family:'Open Sans';font-style:normal;font-weight:600;font-display:swap;
+  src:url('../assets/fonts/open-sans-latin-600-normal.woff2') format('woff2')}
+@font-face{font-family:'Open Sans';font-style:normal;font-weight:700;font-display:swap;
+  src:url('../assets/fonts/open-sans-latin-700-normal.woff2') format('woff2')}
+
+/* ------------------------------- tokens ------------------------------- */
+:root{
+  --navy:#1F1646;
+  --navy-deep:#171442;
+  --purple:#A7549F;
+  --lilac:#CB98C6;
+  --cyan:#00BFDE;
+  --blue:#1B75BC;
+  --line:#D1D3D5;
+  --page:#F5F5F5;
+  --card-shadow:0 2px 15px rgba(0,0,0,.1);
+  --nav-shadow:0 2px 16px rgba(0,0,0,.1);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--page);
+  font-family:'Open Sans','Helvetica Neue',Helvetica,Arial,sans-serif;
+  font-stretch:100%;
+  color:var(--navy);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+img{display:block;border:0;max-width:none}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;margin:0;padding:0;cursor:pointer}
+h1,h2,h3,p{margin:0}
+.sprite{position:absolute;width:0;height:0;overflow:hidden;pointer-events:none}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+
+/* ------------------------- stage / fit-to-width ------------------------ */
+/* The design is a fixed 1440px canvas. Below 1440px the whole canvas is
+   scaled down (never reflowed) so the composition stays pixel-identical. */
+.stage{position:relative;width:1440px;margin:0 auto}
+body.is-fitting{overflow-x:hidden}
+body.is-fitting .stage{
+  position:absolute;left:50%;top:0;margin-left:-720px;
+  transform-origin:50% 0;
+}
+
+/* -------------------------------- page --------------------------------- */
+.page{
+  position:relative;
+  width:1440px;
+  height:3017.77px;
+  overflow:hidden;                       /* hero art + card 5 bleed off-canvas */
+  background:linear-gradient(0deg,#F5F5F5,#F5F5F5),#FFFFFF;
+}
+
+/* =========================================================================
+   HEADER  —  96px
+   ========================================================================= */
+.site-header{position:absolute;left:0;right:0;top:0;height:96px;background:#FFFFFF;z-index:40}
+
+.nav{
+  position:absolute;left:16px;top:16px;width:1408px;height:80px;
+  background:var(--navy);box-shadow:var(--nav-shadow);border-radius:5px;
+}
+
+.nav__logo{position:absolute;left:32px;top:20px;width:144.14px;height:40px;display:block}
+.logo{display:block;width:144.14px;height:40px}
+.nav a:hover .logo,.footer-logo:hover .logo{opacity:.88}
+
+/* nav links: h48, radius 3, label left 16 / top 13.59, icon top 12 */
+.navlink{position:absolute;top:16px;height:48px;border-radius:3px;display:block}
+.navlink__label{
+  position:absolute;left:16px;top:13.59px;height:19px;
+  font-size:14px;line-height:17px;font-weight:600;color:#FFFFFF;white-space:nowrap;
+}
+.navlink .ic{position:absolute;top:12px;width:24px;height:24px;color:#FFFFFF}
+.navlink--wwd  {left:409.08px;width:147.17px} .navlink--wwd .ic{left:107.17px}
+.navlink--epr  {left:556.25px;width:237.19px} .navlink--epr .ic{left:197.19px}
+.navlink--about{left:793.44px;width:104.95px} .navlink--about .ic{left:64.95px}
+.navlink--venue{left:898.39px;width:248.30px} .navlink--venue .ic{left:208.30px}
+.navlink:hover{background:rgba(255,255,255,.10)}
+
+.navicon{position:absolute;width:24px;height:24px;color:#FFFFFF;display:block}
+.navicon--search {left:1161.69px;top:28px}
+.navicon--account{left:1215.69px;top:26.09px}
+.navicon:hover{color:var(--cyan)}
+
+.btn-contact{
+  position:absolute;left:1254.69px;top:16px;width:121.31px;height:48px;
+  background:var(--purple);border-radius:3px;display:block;
+}
+.btn-contact span{
+  position:absolute;left:24px;top:15.59px;height:16.8px;
+  font-size:14px;line-height:17px;font-weight:600;color:#FFFFFF;white-space:nowrap;
+}
+.btn-contact:hover{background:#95458e}
+
+/* =========================================================================
+   MAIN  —  top 96, h 2513.58
+   ========================================================================= */
+.main{position:absolute;left:0;right:0;top:96px;height:2513.58px;background:#FFFFFF}
+
+/* ------------------------------ hero art ------------------------------- */
+/* Frame: left 572.8, top 66, 1040 x 520. The #B1B1B1 "Vector" inside
+   "Mask group" is a Figma mask shape (not a painted layer), so it clips
+   rather than fills. */
+.hero-art{position:absolute;left:572.8px;top:66px;width:1040px;height:520px}
+.hero-art__photo{
+  position:absolute;left:6.28%;right:2.12%;top:18.05%;bottom:2.41%;
+  background:url('../assets/img/hero-collage.jpg') 50% 50%/cover no-repeat;
+  clip-path:polygon(8.5% 0%,100% 0%,100% 100%,0% 100%);
+}
+.shard{position:absolute;display:block;transform:rotate(45deg)}
+.shard--1{left:53.72%;top:75.28%;width:11.12%;height:22.31%;background:#1B75BC}
+.shard--2{left:6.28%; top:70.97%;width:6.51%; height:13.06%;background:#00BFDE}
+.shard--3{left:88.85%;top:44.60%;width:6.51%; height:13.05%;background:#1B75BC}
+.shard--4{left:74.87%;top:18.05%;width:5.33%; height:10.70%;background:#A7549F}
+.shard--5{left:48.23%;top:34.87%;width:11.59%;height:23.25%;background:#00BFDE}
+.shard--6{left:86.28%;top:64.78%;width:11.60%;height:23.26%;background:#00BFDE}
+
+/* ------------------------------ hero copy ------------------------------ */
+.hero-title{
+  position:absolute;left:62px;top:202.64px;width:353.04px;height:133.56px;
+  display:flex;align-items:center;
+  font-size:54.2px;line-height:60px;font-weight:500;letter-spacing:-2px;
+  color:var(--navy);
+}
+.hero-sub{
+  position:absolute;left:62px;top:356.77px;width:452.2px;height:85.18px;
+  display:flex;align-items:center;
+  font-size:18px;line-height:31px;font-weight:400;color:var(--navy);
+}
+
+/* --------------------------- hero diamonds ----------------------------- */
+/* container rotated 45deg; the image is the container diagonal (a*sqrt2)
+   counter-rotated so the photo reads upright inside the diamond. */
+.diamond{position:absolute;transform:rotate(45deg);overflow:hidden}
+.diamond img{
+  position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%) rotate(-45deg);
+  object-fit:cover;
+}
+.diamond--lg{left:578.17px; top:77.21px; width:325.52px;height:325.52px}
+.diamond--lg img{width:462.22px;height:462.22px}
+.diamond--sm{left:943.96px; top:326.15px;width:161.19px;height:161.19px}
+.diamond--sm img{width:228.88px;height:228.87px}
+.diamond--md{left:1153.38px;top:204.56px;width:254.80px;height:254.80px}
+.diamond--md img{width:361.79px;height:361.79px}
+
+/* =========================================================================
+   NEWS, INSIGHTS & INSPIRATION  —  Section: top 640.19, h 366.59
+   ========================================================================= */
+.news{position:absolute;left:0;top:640.19px;width:1440px;height:366.59px}
+.news__eyebrow{
+  position:absolute;left:72px;top:-2px;width:252.63px;height:24px;
+  display:flex;align-items:center;
+  font-size:18px;line-height:22px;font-weight:700;color:var(--purple);
+}
+/* white wipe (left -528, w 600, h 275) hiding the rail left of the pinned card */
+.news__wipe{position:absolute;left:-528px;top:24.09px;width:600px;height:275px;background:#FFFFFF;z-index:2}
+/* 16px white seam between the two pinned cards (left 372, w 16, h 250) */
+.news__seam{position:absolute;left:372px;top:36.59px;width:16px;height:250px;background:#FFFFFF;z-index:3}
+
+/* rail viewport + track (cards at 708 / 1028 / 1348 …, pitch 320) */
+.news__viewport{position:absolute;left:0;top:0;width:1440px;height:100%;overflow:hidden;z-index:1}
+.news__track{
+  position:absolute;left:0;top:36.59px;height:230px;
+  transition:transform .55s cubic-bezier(.4,0,.2,1);will-change:transform;
+}
+.rcard{position:absolute;top:0}
+.rcard:nth-child(1){left:708px}
+.rcard:nth-child(2){left:1028px}
+.rcard:nth-child(3){left:1348px}
+.rcard:nth-child(4){left:1668px}
+.rcard:nth-child(5){left:1988px}
+.rcard:nth-child(6){left:2308px}
+.rcard:nth-child(7){left:2628px}
+.rcard:nth-child(8){left:2948px}
+
+/* shared card visuals (300 x 230, 4px purple top border, card shadow) */
+.rcard,.ncard{width:300px;height:230px;background:rgba(255,255,255,.002);box-shadow:var(--card-shadow)}
+.card__link{position:absolute;left:0;right:0;top:0;bottom:0;border-top:4px solid var(--purple);display:block}
+.rcard:hover,.ncard:hover{box-shadow:0 6px 22px rgba(0,0,0,.16)}
+
+.card__title{
+  position:absolute;left:24px;top:28px;width:252px;height:49.19px;
+  display:flex;align-items:center;
+  font-size:18px;line-height:25px;font-weight:500;color:var(--navy);
+}
+/* exact Figma text-box widths -> identical line breaks */
+.rcard--a .card__title{width:177.28px}
+.rcard--b .card__title{width:209.12px}
+.rcard--c .card__title{width:240.50px;height:124.75px}
+
+.card__cta{
+  position:absolute;left:24px;top:174.6px;width:33.5px;height:16.8px;
+  font-size:14px;line-height:17px;font-weight:600;color:var(--navy);
+}
+.card__cta .ic{position:absolute;left:40.11px;top:-4.6px;width:27px;height:26px;color:var(--navy)}
+.rcard:hover .card__cta,.rcard:hover .card__cta .ic{color:var(--purple)}
+
+/* pinned featured card (Background+VerticalBorder+Shadow) */
+.ncard{position:absolute;z-index:3}
+.ncard--featured{left:72px;top:36.59px;background:var(--purple)}
+.ncard--featured .card__title{width:234.78px;color:#FFFFFF}
+.ncard--featured .card__cta,.ncard--featured .card__cta .ic{color:#FFFFFF}
+
+/* pinned media card (Container, 300 x 250) */
+.ncard--media{left:388px;top:36.59px;height:250px;background:var(--purple)}
+.ncard__thumb{
+  position:absolute;left:20px;top:34px;width:70px;height:119px;display:block;
+  filter:drop-shadow(0 5px 12px rgba(0,0,0,.14)) drop-shadow(0 2px 6px rgba(0,0,0,.12));
+}
+.device{display:block;width:70px;height:119px}
+.card__title--media{left:110px;width:165.34px;height:124.75px;color:#FFFFFF}
+.card__cta--media{left:110px;top:194.6px;color:#FFFFFF}
+.card__cta--media .ic{color:#FFFFFF}
+
+/* round carousel buttons (news) */
+.roundbtn{
+  position:absolute;width:40px;height:40px;border-radius:40px;background:#FFFFFF;
+  display:flex;align-items:center;justify-content:center;
+}
+.ic{display:block;flex:0 0 auto}
+.ic--24{width:24px;height:24px}
+.ic--25{width:24px;height:25px}
+.ic--grey{color:var(--line)}
+.news .roundbtn{top:306.59px;z-index:4}
+.news .roundbtn--prev{left:1272px;border:2px solid var(--line)}
+.news .roundbtn--next{left:1328px;border:2px solid var(--navy)}
+.news .roundbtn--prev:not([disabled]):hover{border-color:var(--navy)}
+.news .roundbtn--prev:not([disabled]):hover .ic{color:var(--navy)}
+.news .roundbtn--next:hover{background:var(--navy)}
+.news .roundbtn--next:hover .ic{color:#FFFFFF}
+.roundbtn[disabled]{opacity:.55;cursor:default}
+
+/* =========================================================================
+   FROM CONCEPT TO REALITY
+   ========================================================================= */
+.concept-title{
+  position:absolute;left:565.66px;top:1066.78px;width:309.01px;height:32.64px;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  font-size:27.2px;line-height:33px;font-weight:500;color:var(--navy);
+}
+.concept-sub{
+  position:absolute;left:287.72px;top:1125.42px;width:864.92px;height:76.38px;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  font-size:16px;line-height:27px;font-weight:400;color:var(--navy);
+}
+
+/* ------------------------------- tab bar ------------------------------- */
+.tabs{position:absolute;left:0;top:1228.98px;width:1440px;height:95px}
+.tab{
+  position:absolute;top:28.5px;height:38px;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  font-size:16px;line-height:22px;font-weight:400;color:var(--navy);white-space:nowrap;
+}
+.tab:nth-of-type(1){left:241.285px;width:130.63px}
+.tab:nth-of-type(2){left:407.915px;width:147.31px}
+.tab:nth-of-type(3){left:590.905px;width:126.37px}
+.tab:nth-of-type(4){left:752.880px;width:154.30px}
+.tab::after{
+  content:'';position:absolute;left:0;right:0;bottom:-4px;height:4px;
+  background:var(--purple);opacity:0;transition:opacity .2s;
+}
+.tab.is-active::after{opacity:1}
+.tab.is-active{font-weight:600}
+.tab:hover::after{opacity:.45}
+.tab.is-active:hover::after{opacity:1}
+.tabs__divider{position:absolute;left:942.86px;top:20px;width:1px;height:55px;background:var(--lilac)}
+
+/* outline button (Explore Event Types / View Resources) */
+.btn-outline{position:absolute;border-radius:3px;display:block}
+.btn-outline>span{
+  position:absolute;left:26px;top:50%;transform:translateY(-50%);height:16.8px;
+  font-size:14px;line-height:17px;font-weight:600;color:var(--navy);white-space:nowrap;
+}
+.btn-outline .ic{position:absolute;top:50%;transform:translateY(-50%);color:var(--navy)}
+.btn-outline--explore{
+  left:979.86px;top:23.5px;width:218.86px;height:48px;border:2px solid var(--navy);
+}
+.btn-outline--explore .ic{left:168.86px;width:24px;height:25px}
+.btn-outline--explore:hover{background:var(--navy)}
+.btn-outline--explore:hover>span,.btn-outline--explore:hover .ic{color:#FFFFFF}
+
+/* =========================================================================
+   SERVICES CAROUSEL  —  Container: left 72, top 1363.98, 1296 x 566.22
+   ========================================================================= */
+.svc{position:absolute;left:72px;top:1363.98px;width:1296px;height:566.22px}
+.svc__viewport{position:absolute;left:0;top:0;width:1296px;height:502.22px;overflow:hidden}
+.svc__track{
+  position:absolute;left:0;top:0;height:502.22px;display:flex;
+  transition:transform .55s cubic-bezier(.4,0,.2,1);will-change:transform;
+}
+.slide{position:relative;flex:0 0 1296px;width:1296px;height:502.22px;background:#FFFFFF}
+
+.slide__col{position:absolute;left:0;top:0;width:638px;height:502.22px}
+.slide__img{position:absolute;overflow:hidden;background:#D9D9D9}
+.slide__img img{width:100%;height:100%;object-fit:cover}
+.slide__img--tall  {left:0;    top:40px;    width:309px;   height:403.91px}
+.slide__img--top   {left:329px;top:0;       width:308.98px;height:258.48px}
+.slide__img--bottom{left:329px;top:278.49px;width:199.33px;height:223.73px}
+.slide__mark{position:absolute;left:548.33px;top:278.49px;width:89.66px;height:223.73px;display:block}
+.mark{display:block;width:65px;height:98px}
+
+.slide__body{position:absolute;left:0;top:0;width:1296px;height:502.22px}
+.slide__title{
+  position:absolute;left:682px;top:141.33px;width:249.72px;height:42px;
+  display:flex;align-items:center;
+  font-size:30px;line-height:42px;font-weight:500;color:var(--navy);
+}
+.slide__text{
+  position:absolute;left:682px;top:197.33px;width:569.64px;height:76.38px;
+  display:flex;align-items:center;
+  font-size:16px;line-height:27px;font-weight:400;color:var(--navy);
+}
+.btn-solid{
+  position:absolute;left:682px;top:312.9px;width:157.94px;height:48px;
+  background:var(--purple);border-radius:3px;display:block;
+}
+.btn-solid>span{
+  position:absolute;left:24px;top:15.59px;height:16.8px;
+  font-size:14px;line-height:17px;font-weight:600;color:#FFFFFF;white-space:nowrap;
+}
+.btn-solid .ic{position:absolute;left:109.94px;top:12px;width:24px;height:24px;color:#FFFFFF}
+.btn-solid:hover{background:#95458e}
+
+/* dots */
+.svc__dots{position:absolute;left:0;top:544.22px;width:320px;height:4px}
+.dot{position:absolute;top:0;width:72px;height:4px;background:var(--line);transition:background .2s}
+.dot:nth-child(1){left:4px}
+.dot:nth-child(2){left:84px}
+.dot:nth-child(3){left:164px}
+.dot:nth-child(4){left:244px}
+.dot.is-active{background:var(--purple)}
+.dot:hover{background:var(--lilac)}
+.dot.is-active:hover{background:var(--purple)}
+
+/* service arrows */
+.svc .roundbtn{top:526.22px}
+.svc .roundbtn--prev{left:1200px;border:2px solid var(--line)}
+.svc .roundbtn--next{left:1256px;border:2px solid var(--navy)}
+.svc .roundbtn--prev:hover{border-color:var(--navy)}
+.svc .roundbtn--prev:hover .ic{color:var(--navy)}
+.svc .roundbtn--next:hover{background:var(--navy)}
+.svc .roundbtn--next:hover .ic{color:#FFFFFF}
+
+/* =========================================================================
+   EVENT PLANNING RESOURCES BAND  —  top 1990.2, 1076.66 x 167.38
+   ========================================================================= */
+.band{position:absolute;left:181.67px;top:1990.2px;width:1076.66px;height:167.38px;background:var(--navy)}
+.band__eyebrow{
+  position:absolute;left:28px;top:34px;width:230.61px;height:22px;
+  display:flex;align-items:center;
+  font-size:18px;line-height:22px;font-weight:700;color:var(--cyan);
+}
+.band__text{
+  position:absolute;left:28px;top:72.6px;width:774.77px;height:57.39px;
+  display:flex;align-items:center;
+  font-size:21px;line-height:29px;font-weight:500;color:#FFFFFF;
+}
+.btn-outline--light{left:851.77px;top:59.69px;width:188.89px;height:48px;border:2px solid #FFFFFF}
+.btn-outline--light>span{color:#FFFFFF}
+.btn-outline--light .ic{left:138.89px;width:24px;height:24px;color:#FFFFFF}
+.btn-outline--light:hover{background:#FFFFFF}
+.btn-outline--light:hover>span,.btn-outline--light:hover .ic{color:var(--navy)}
+
+/* =========================================================================
+   AWARDS / RECOGNITION  —  left 270, top 2277.58, 900 x 100
+   ========================================================================= */
+.awards{position:absolute;left:270px;top:2277.58px;width:900px;height:100px}
+.seal{position:absolute;top:0;display:block;height:100px}
+.seal svg{width:100%;height:100%;display:block}
+.seal--1{left:75.525px;width:58.25px}
+.seal--2{left:213.770px;width:70.70px}
+.seal--3{left:364.470px;width:100px}
+.seal--4{left:544.470px;width:100px}
+.seal--5{left:724.470px;width:100px}
+.seal:hover{opacity:.85}
+
+/* =========================================================================
+   FOOTER  —  top 2609.58, h 408.19
+   ========================================================================= */
+.site-footer{position:absolute;left:0;right:0;top:2609.58px;height:408.19px;background:#FFFFFF;z-index:20}
+.footer-panel{position:absolute;left:16px;top:0;width:1408px;height:392.19px;background:var(--navy)}
+
+.footer-logo{position:absolute;left:48px;top:54px;width:144.14px;height:40px;display:block}
+.footer-pitch{
+  position:absolute;left:48px;top:114px;width:252.74px;height:75px;
+  display:flex;align-items:center;
+  font-size:30px;line-height:34px;font-weight:600;letter-spacing:-.3px;color:#FFFFFF;
+}
+
+.fcol{position:absolute;top:52px;height:119.78px}
+.fcol--a{left:714px;width:173.52px}
+.fcol--b{left:1047px;width:184.64px}
+.fcol a{
+  position:absolute;left:0;height:19px;
+  font-size:14px;line-height:17px;font-weight:600;color:#FFFFFF;white-space:nowrap;
+}
+.fcol a:nth-child(1){top:0}
+.fcol a:nth-child(2){top:33.59px}
+.fcol a:nth-child(3){top:67.19px}
+.fcol a:nth-child(4){top:100.78px}
+.fcol a:hover{color:var(--cyan)}
+
+.social{position:absolute;top:206px;width:24px;height:24px;color:#FFFFFF;display:block}
+.social--ig{left:48px}
+.social--li{left:92px}
+.social:hover{color:var(--cyan)}
+
+.footer-rule{position:absolute;left:48px;top:262px;width:1312px;height:1px;background:rgba(255,255,255,.24)}
+
+.footer-legal{
+  position:absolute;left:48px;top:297px;width:601.54px;height:38.59px;
+  display:flex;align-items:center;
+  font-size:12px;line-height:22px;font-weight:600;color:#FFFFFF;
+}
+.flegal{position:absolute;top:295px;height:21.59px;border-radius:3px;display:block}
+.flegal>span{
+  position:absolute;left:12px;top:1.99px;height:17px;
+  font-size:12px;line-height:22px;font-weight:600;color:#FFFFFF;
+  text-decoration:underline;white-space:nowrap;
+}
+.flegal__div{position:absolute;right:0;top:2px;width:1px;height:17.59px;background:#FFFFFF}
+.flegal--privacy {left:825.23px; width:102.55px}
+.flegal--terms   {left:927.78px; width:98.45px}
+.flegal--reports {left:1026.23px;width:163.17px}
+.flegal:hover>span{color:var(--cyan)}
+.fteam{
+  position:absolute;left:1201.41px;top:297px;width:146.9px;height:17px;
+  font-size:12px;line-height:22px;font-weight:600;color:#FFFFFF;
+  text-decoration:underline;text-align:center;
+}
+.fteam:hover{color:var(--cyan)}
+
+/* ------------------------------- motion -------------------------------- */
+@media (prefers-reduced-motion:reduce){
+  .news__track,.svc__track{transition:none}
+  *{animation:none!important;transition:none!important}
+}

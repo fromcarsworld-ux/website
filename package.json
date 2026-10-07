@@ -1,0 +1,23 @@
+{
+  "name": "website",
+  "version": "1.0.0",
+  "description": "Encore home page \u2014 pixel-exact static build of the 1440w light design spec",
+  "scripts": {
+    "start": "python3 -m http.server 8080 --bind 0.0.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fromcarsworld-ux/website.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fromcarsworld-ux/website/issues"
+  },
+  "homepage": "https://github.com/fromcarsworld-ux/website#readme",
+  "dependencies": {
+    "@fontsource/open-sans": "^5.3.0"
+  },
+  "private": true
+}
