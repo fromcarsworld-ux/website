@@ -39,6 +39,18 @@
     window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
   });
 
+
+  /* ------------- download chip: only useful when the bundle is served ----- */
+  (function () {
+    var chip = document.querySelector('.dl-chip');
+    if (!chip) return;
+    try {
+      fetch(chip.getAttribute('href'), { method: 'HEAD' }).then(function (r) {
+        if (!r || !r.ok) chip.remove();
+      })['catch'](function () { chip.remove(); });
+    } catch (e) { chip.remove(); }
+  })();
+
   /* ============================ NEWS RAIL ================================ */
   /* Rail cards sit on a 320px pitch starting at x708 and slide underneath the
      two pinned cards. Travel ends when the last card is flush with x1440.   */
